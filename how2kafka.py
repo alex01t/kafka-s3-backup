@@ -1,5 +1,4 @@
 """
-    this is helm chart to backup and restore kafka topic partition keeping exactly the same offsets
 
     k run cli --image=debian:11 --restart=Never -- sleep inf
     apt update; apt install -y python3-pip && pip3 install ipython kafka-python boto3
