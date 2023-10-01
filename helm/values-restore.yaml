@@ -1,0 +1,70 @@
+
+nameOverride: "kafka-from-s3"
+fullnameOverride: "kafka-from-s3"
+
+env:
+  - name: ACTION
+    value: 'restore'
+  #
+  - name: DUMP_TOPIC
+    value: 'my-topic'
+  - name: DUMP_PARTITION
+    value: '0'
+  #
+  - name: RESTORE_MODE
+    value: 'continue'  # 'full' or 'continue'
+  - name: RESTORE_BROKER
+    value: 'my-cluster-kafka-brokers:9092'
+  - name: RESTORE_TOPIC
+    value: 'restored-my-topic'
+  - name: RESTORE_PARTITION
+    value: '0'
+  #
+  - name: S3_REGION
+    value: 'eu-central-1'
+  - name: S3_BUCKET
+    value: 'kafka-backup'
+  - name: S3_PATH
+    value: 'my-cluster/topics'
+  #
+  - name: AWS_ACCESS_KEY_ID
+    valueFrom:
+      secretKeyRef:
+        name: s3-kafka-backup
+        key: AWS_ACCESS_KEY_ID
+  - name: AWS_SECRET_ACCESS_KEY
+    valueFrom:
+      secretKeyRef:
+        name: s3-kafka-backup
+        key: AWS_SECRET_ACCESS_KEY
+
+image:
+  repository: python
+  tag: "3"
+  pullPolicy: IfNotPresent
+
+command:
+  - bash
+  - -c
+  - |
+    pip install kafka-python boto3
+    exec /scripts/k2s3.py
+
+resources:
+  requests:
+    memory: "500Mi"
+    cpu: "10m"
+  limits:
+    memory: "500Mi"
+    cpu: "2000m"
+securityContext: {}
+startupProbe: {}
+livenessProbe: {}
+readinessProbe: {}
+ports: []
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+
+
