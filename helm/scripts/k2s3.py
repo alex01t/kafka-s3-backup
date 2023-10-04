@@ -110,7 +110,8 @@ def restore(dry_run=True):
                 offset = record_metadata.offset
                 print(f'last empty message offset was {offset}')
             except Exception as e:
-                print(e)
+                print(f'error: failed to send empty messages to {RESTORE_TOPIC}: {e}')
+                sys.exit(8)
             restore_topic_start_offset, restore_topic_end_offset = get_topic_offsets(RESTORE_BROKER, RESTORE_TOPIC, RESTORE_PARTITION)
 
     # find chunk that starts as restore_topic_end_offset and restore from it and further
@@ -151,8 +152,8 @@ def restore(dry_run=True):
                 offset = record_metadata.offset
                 offsets.append(offset)
         except Exception as e:
-            print(e)
-            break
+            print(f'error: fail to send the batch {r["key"]} to {RESTORE_TOPIC}: {e}')
+            sys.exit(9)
         t3 = datetime.datetime.utcnow().timestamp()
         print(f'sent {r["to"] - r["from"]} messages in {(t3 - t2):.3} sec, offsets {offsets[0]}..{offsets[-1]}')
 
